@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "notebooklm": {
+      "source": "PleasePrompto/notebooklm-skill",
+      "sourceType": "github",
+      "computedHash": "40877d53667ab1d100695e3b171c305a9c341fa251835af1c6f5d8a910f3ac6f"
+    }
+  }
+}

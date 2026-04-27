@@ -1,0 +1,27 @@
+{
+  "servers": [
+    {
+      "name": "VelvetBasilDB",
+      "type": "postgres",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server",
+        "--prebuilt=postgres"
+      ],
+      "env": {
+        "POSTGRES_URL": "postgres://user:password@host:port/database"
+      }
+    },
+    {
+      "name": "SupabaseManagement",
+      "command": "node",
+      "args": [
+        "d:/TEKTILE/supabase-mcp-main/packages/mcp-server-supabase/dist/transports/stdio.js"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "<YOUR_SUPABASE_ACCESS_TOKEN>"
+      }
+    }
+  ]
+}
