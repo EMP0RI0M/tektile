@@ -18,6 +18,9 @@ export async function GET(request: Request) {
     }
     
     console.error('AUTH CALLBACK ERROR:', error)
+    if (error.message?.includes('fetch failed')) {
+      console.error('DETECTED FETCH FAILURE: This is likely an SSL or Clock issue. Check system time.')
+    }
   }
 
   console.log('AUTH CALLBACK FALLBACK: redirecting to /dashboard')

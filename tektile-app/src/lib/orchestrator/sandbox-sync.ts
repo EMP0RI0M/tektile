@@ -18,7 +18,15 @@ export async function syncSandboxToManifest(
   
   try {
     // 1. Recursive list of all project files in possible workdirs
-    const output = await sandbox.commands.run(`find /code /home/user /workspace -maxdepth 4 -not -path '*/.*' -not -path '*/node_modules*' -not -path '*/.next*' -type f 2>/dev/null`);
+    // We check for directory existence to avoid find errors (exit status 1)
+    const findCmd = `
+      for dir in /code /home/user /workspace; do
+        if [ -d "$dir" ]; then
+          find "$dir" -maxdepth 4 -not -path '*/.*' -not -path '*/node_modules*' -not -path '*/.next*' -type f 2>/dev/null
+        fi
+      done
+    `.trim();
+    const output = await sandbox.commands.run(findCmd);
     
     if (output.exitCode !== 0) {
       console.warn(`[SandboxSync] Failed to list files: ${output.stderr}`);
@@ -28,12 +36,11 @@ export async function syncSandboxToManifest(
     const paths = output.stdout.split("\n").filter(p => p && p !== "." && (p.endsWith(".tsx") || p.endsWith(".ts") || p.endsWith(".jsx") || p.endsWith(".js") || p.endsWith(".css")));
     const files: Record<string, any> = { ...(existingManifest?.files || {}) };
     
-    // 2. Fetch content for each file
-    // Note: In a production app, we'd only fetch changed files using mtime
-    for (const p of paths) {
+    // 2. Fetch content for each file in parallel to significantly speed up sync
+    await Promise.all(paths.map(async (p) => {
       const cleanPath = p.replace("/code/", "").replace("/home/user/", "").replace("/workspace/", "").replace(/^\.\//, "");
       try {
-        const content = await sandbox.files.read(p); // Use absolute path to read
+        const content = await sandbox.files.read(p);
         files[cleanPath] = {
           content,
           lastModified: Date.now(),
@@ -42,7 +49,7 @@ export async function syncSandboxToManifest(
       } catch (err) {
         console.warn(`[SandboxSync] Could not read ${cleanPath}:`, err);
       }
-    }
+    }));
 
     // 3. Construct the new manifest
     const newManifest: FileManifest = {

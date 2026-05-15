@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/use-auth";
 import { 
-  ChevronLeft, Layout, Settings, Activity, 
+  ChevronLeft, ChevronRight, Layout, Settings, Activity, 
   MessageSquare, Globe, Cpu, Clock, Calendar,
   ArrowRight, PlayCircle, ExternalLink, Box
 } from "lucide-react";

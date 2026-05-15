@@ -12,6 +12,7 @@ export function useAuth() {
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("[useAuth] Initial session:", session ? `User: ${session.user.email}` : "No session");
       setUser(session?.user ?? null);
       setLoading(false);
     });

@@ -99,9 +99,14 @@ export const streamLlmResponse = async ({
       baseURL: "https://openrouter.ai/api/v1",
     });
 
+    let modelName = process.env.DEFAULT_AI_MODEL || "google/gemini-2.0-flash-001";
+    if (modelName.includes("hy3-preview:free")) {
+      modelName = "deepseek/deepseek-v3:free"; // Redirect to DeepSeek if hy3 is still in env
+    }
+
     const result = streamText({
       system,
-      model: openrouter.chat(process.env.DEFAULT_AI_MODEL || "google/gemini-2.0-flash-001"),
+      model: openrouter.chat(modelName),
       messages: modelMessages as any,
       tools,
       maxRetries: 5,

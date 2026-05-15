@@ -1,7 +1,7 @@
 {
   "servers": [
     {
-      "name": "VelvetBasilDB",
+      "name": "Postgres (Sample)",
       "type": "postgres",
       "command": "npx",
       "args": [
@@ -11,16 +11,18 @@
       ],
       "env": {
         "POSTGRES_URL": "postgres://user:password@host:port/database"
-      }
+      },
+      "disabled": true
     },
     {
-      "name": "SupabaseManagement",
+      "name": "E2B (Custom JS)",
+      "type": "e2b",
       "command": "node",
       "args": [
-        "d:/TEKTILE/supabase-mcp-main/packages/mcp-server-supabase/dist/transports/stdio.js"
+        "d:/TEKTILE/mcp-server-main/packages/e2b-js/index.js"
       ],
       "env": {
-        "SUPABASE_ACCESS_TOKEN": "<YOUR_SUPABASE_ACCESS_TOKEN>"
+        "E2B_API_KEY": "e2b_573d9b3a3dc643237112e751f0711ac82fdb36ae"
       }
     }
   ]

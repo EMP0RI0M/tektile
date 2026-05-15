@@ -32,7 +32,7 @@ export async function createMcpTools(command: string, args: string[] = [], env: 
     // Add a timeout to the connection
     const connectPromise = client.connect(transport);
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error("Connection timeout after 30s")), 30000)
+      setTimeout(() => reject(new Error("Connection timeout after 5s")), 5000)
     );
 
     await Promise.race([connectPromise, timeoutPromise]);

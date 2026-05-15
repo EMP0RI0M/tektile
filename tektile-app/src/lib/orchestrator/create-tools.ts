@@ -253,6 +253,7 @@ export const createTools = async (sandbox: Sandbox, options?: CreateToolsOptions
     if (fs.existsSync(registryPath)) {
       const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
       for (const server of registry.servers || []) {
+        if (server.disabled) continue;
         console.log(`[MCP] Initializing dynamic server: ${server.name}...`);
         
         // Ensure postgres servers get their parsed env vars

@@ -2,25 +2,24 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useEffect, useState, useMemo } from "react";
+import { createClient } from "@/utils/supabase/client";
 import { 
   Files, Search, GitBranch, Activity, 
-  Settings, Share, CheckCircle2, Zap
+  Settings, Share, CheckCircle2, Zap, Monitor
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 
-// New UI Components
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { FileExplorer } from "@/components/new-ui/file-explorer";
-import { V2TopNav } from "@/components/forge-v2/top-nav";
-import { CommandCenter } from "@/components/forge-v2/command-center";
 import { FileCollection } from "@/types/new-ui";
+import { Assistant } from "@/components/assistant";
+import { RepoWelcome } from "@/components/assistant-ui/repo-welcome";
 
 const GitNexusViewer = dynamic(() => import("@/components/gitnexus/gitnexus-viewer"), {
   ssr: false,
@@ -36,12 +35,14 @@ export default function ProjectWorkspace() {
 
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeView, setActiveView] = useState<"explorer" | "architecture">("explorer");
+  const [activeView, setActiveView] = useState<"explorer" | "architecture" | "preview">("explorer");
   const [manifest, setManifest] = useState<{ files: FileCollection }>({ files: {} });
 
   const [initialMessages, setInitialMessages] = useState<any[]>([]);
+  const previewUrl = project?.adorable_metadata?.vm?.previewUrl;
   const [messagesLoading, setMessagesLoading] = useState(true);
 
   useEffect(() => {
@@ -50,34 +51,60 @@ export default function ProjectWorkspace() {
     } else if (projectId) {
       fetchProject();
       fetchManifest();
+      
       if (conversationId) {
         fetchMessages();
       } else {
-        setMessagesLoading(false);
+        // Try to find the latest conversation for this project
+        const findLatestConversation = async () => {
+          const { data, error } = await supabase
+            .from("messages")
+            .select("conversation_id")
+            .eq("project_id", projectId)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          
+          if (!error && data?.conversation_id) {
+            router.replace(`/project/${projectId}/${data.conversation_id}`);
+          } else {
+            setMessagesLoading(false);
+          }
+        };
+        findLatestConversation();
       }
     }
   }, [user, authLoading, projectId, conversationId, router]);
 
   const fetchProject = async () => {
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("id", projectId)
-      .single();
-    
-    if (error) {
-      console.error("Error fetching project:", {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-        projectId
-      });
+    if (!projectId || projectId === "undefined" || projectId === "null") {
+      console.error("Invalid project ID:", projectId);
       router.push("/dashboard/projects");
-    } else {
-      setProject(data);
+      return;
     }
-    setLoading(false);
+
+    try {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("id", projectId)
+        .single();
+      
+      if (error) {
+        console.error("Error fetching project:", {
+          projectId,
+          error: JSON.parse(JSON.stringify(error)), // Force serialize all properties
+          raw: error
+        });
+        router.push("/dashboard/projects");
+      } else {
+        setProject(data);
+      }
+    } catch (err) {
+      console.error("Unexpected error fetching project:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchManifest = async () => {
@@ -90,9 +117,6 @@ export default function ProjectWorkspace() {
       .maybeSingle();
     
     if (!error && data?.manifest) {
-      // We need to convert the manifest files to FileCollection if they aren't already
-      // The current FileExplorer expects content in the value, but manifest might only have metadata
-      // For now, we'll assume manifest.files is Record<string, string> or handle it accordingly
       setManifest(data.manifest);
     } else {
       setManifest({ files: {} });
@@ -108,21 +132,51 @@ export default function ProjectWorkspace() {
         .eq("conversation_id", conversationId)
         .order("created_at", { ascending: true });
 
-      if (error) {
-        console.error("Error fetching messages:", error);
-      } else if (data) {
+      if (!error && data) {
         const formattedMessages = data.map(m => {
           let extractedContent = m.content;
-          if (Array.isArray(m.content)) {
-            const textPart = m.content.find((part: any) => part.type === "text");
-            extractedContent = textPart ? textPart.text : JSON.stringify(m.content);
-          } else if (typeof m.content === "object" && m.content !== null) {
-            extractedContent = m.content.text || JSON.stringify(m.content);
-          }
+          
+          // Helper to recursively extract text from potentially complex or stringified content
+          const resolveContent = (val: any): string => {
+            if (typeof val === "string") {
+              const trimmed = val.trim();
+              if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+                try {
+                  const parsed = JSON.parse(trimmed);
+                  // Case 1: Assistant UI / AI SDK Response object
+                  if (parsed.responseMessage?.parts) {
+                    return parsed.responseMessage.parts
+                      .filter((p: any) => p.type === "text")
+                      .map((p: any) => p.text)
+                      .join("\n");
+                  }
+                  // Case 2: Simple object with 'text' property
+                  if (parsed.text) return parsed.text;
+                  // Case 3: Just return stringified version if no clear text field
+                  return val;
+                } catch (e) {
+                  return val;
+                }
+              }
+              return val;
+            }
+            if (Array.isArray(val)) {
+              const textPart = val.find((part: any) => part.type === "text");
+              return textPart ? textPart.text : JSON.stringify(val);
+            }
+            if (typeof val === "object" && val !== null) {
+              return val.text || JSON.stringify(val);
+            }
+            return String(val || "");
+          };
+
+          const finalContent = resolveContent(extractedContent);
+
           return {
             id: m.id,
             role: m.role.toLowerCase(),
-            content: extractedContent,
+            content: finalContent,
+            parts: [{ type: "text", text: finalContent }],
             createdAt: new Date(m.created_at),
           };
         });
@@ -143,34 +197,71 @@ export default function ProjectWorkspace() {
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
-      {/* Top Navigation */}
-      <V2TopNav projectName={project?.name || "Initializing..."} onDeploy={() => {}} />
+      {/* Top Header */}
+      <header className="h-12 border-b flex items-center justify-between px-4 bg-muted/20 shrink-0">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Zap className="size-5 text-primary fill-primary" />
+            <span className="font-bold text-sm tracking-tight">Adorable AI</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          <span className="text-sm font-medium text-muted-foreground">{project?.name || "Project"}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="h-8 px-3 rounded-md bg-primary text-primary-foreground text-xs font-bold hover:opacity-90 transition-opacity">
+            Deploy
+          </button>
+          <Settings className="size-4 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" />
+        </div>
+      </header>
 
       {/* Main Workspace Area */}
       <div className="flex-1 overflow-hidden">
         <ResizablePanelGroup direction="horizontal">
           
-          {/* Left Panel: Explorer or Architecture */}
-          <ResizablePanel defaultSize={75} minSize={30}>
-            <div className="h-full flex flex-col overflow-hidden border-r">
-              <div className="h-10 border-b flex items-center px-4 bg-muted/30 gap-4">
+          {/* Left Panel: AI Chat */}
+          <ResizablePanel defaultSize={30} minSize={20}>
+            <div className="h-full border-r bg-muted/5">
+              {!messagesLoading && (
+                <Assistant
+                  initialMessages={initialMessages}
+                  selectedRepoId={projectId}
+                  selectedConversationId={conversationId || ""}
+                  welcome={<RepoWelcome />}
+                />
+              )}
+            </div>
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          {/* Right Panel: Code/Preview Area */}
+          <ResizablePanel defaultSize={70} minSize={30}>
+            <div className="h-full flex flex-col overflow-hidden">
+              <div className="h-10 border-b flex items-center px-4 bg-muted/30 gap-4 shrink-0">
                 <button 
                   onClick={() => setActiveView("explorer")}
-                  className={`text-xs font-bold uppercase tracking-widest transition-colors ${activeView === "explorer" ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${activeView === "explorer" ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   Files
                 </button>
                 <button 
                   onClick={() => setActiveView("architecture")}
-                  className={`text-xs font-bold uppercase tracking-widest transition-colors ${activeView === "architecture" ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${activeView === "architecture" ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   Architecture
                 </button>
+                <button 
+                  onClick={() => setActiveView("preview")}
+                  className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${activeView === "preview" ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  Preview
+                </button>
               </div>
               
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 overflow-hidden relative">
                 <AnimatePresence mode="wait">
-                  {activeView === "explorer" ? (
+                  {activeView === "explorer" && (
                     <motion.div
                       key="explorer"
                       initial={{ opacity: 0 }}
@@ -180,7 +271,8 @@ export default function ProjectWorkspace() {
                     >
                       <FileExplorer files={manifest.files} />
                     </motion.div>
-                  ) : (
+                  )}
+                  {activeView === "architecture" && (
                     <motion.div
                       key="architecture"
                       initial={{ opacity: 0, scale: 0.98 }}
@@ -193,32 +285,37 @@ export default function ProjectWorkspace() {
                       </div>
                     </motion.div>
                   )}
+                  {activeView === "preview" && (
+                    <motion.div
+                      key="preview"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="h-full"
+                    >
+                      {previewUrl ? (
+                        <iframe 
+                          src={previewUrl} 
+                          className="h-full w-full border-none"
+                          title="App Preview"
+                        />
+                      ) : (
+                        <div className="h-full flex flex-col items-center justify-center text-muted-foreground gap-4">
+                          <Monitor className="size-8 opacity-20" />
+                          <p className="text-sm">No preview available for this project yet.</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
                 </AnimatePresence>
               </div>
-            </div>
-          </ResizablePanel>
-
-          <ResizableHandle withHandle />
-
-          {/* Right Panel: AI Command Center */}
-          <ResizablePanel defaultSize={25} minSize={20}>
-            <div className="h-full bg-sidebar border-l">
-              {!messagesLoading && (
-                <CommandCenter 
-                  projectId={projectId}
-                  conversationId={conversationId}
-                  initialMessages={initialMessages}
-                  onClose={() => {}} // In a resizable layout, close might mean collapsing the panel
-                  onConversationChange={(pid, cid) => router.push(`/project/${pid}/${cid}`)}
-                />
-              )}
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
 
-      {/* Subtle Bottom Bar */}
-      <div className="h-6 border-t bg-muted/50 flex items-center justify-between px-4 text-[10px] text-muted-foreground font-medium">
+      {/* Status Bar */}
+      <div className="h-6 border-t bg-muted/50 flex items-center justify-between px-4 text-[10px] text-muted-foreground font-medium shrink-0">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1">
             <div className="size-2 rounded-full bg-emerald-500" />
@@ -226,8 +323,8 @@ export default function ProjectWorkspace() {
           </div>
           <span>v2.4.0-stable</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="uppercase tracking-widest">Adorable AI Cloud</span>
+        <div className="flex items-center gap-4 uppercase tracking-widest">
+          <span>Adorable AI Cloud</span>
         </div>
       </div>
     </div>

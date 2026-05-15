@@ -6,8 +6,12 @@ import { cookies } from "next/headers";
 export async function POST(req: NextRequest) {
   try {
     const payload = await req.json();
-    const { projectId, messages: history, conversationId } = payload;
+    const { repoId, projectId: rawProjectId, messages: history, conversationId } = payload;
+    const projectId = rawProjectId || repoId;
     
+    if (!projectId) {
+      return NextResponse.json({ error: "Project ID is missing" }, { status: 400 });
+    }
     // Vercel AI SDK sends the latest message as part of the 'messages' array
     const lastMsgObj = history?.[history.length - 1];
     let lastMessage = lastMsgObj?.content;

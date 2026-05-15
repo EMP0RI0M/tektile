@@ -2,8 +2,7 @@ import { CopyCheckIcon, CopyIcon } from "lucide-react";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { MAX_SEGMENTS } from "@/lib/new-ui-utils";
-import { convertFilesToTreeItems } from "@/lib/new-ui-utils";
+import { MAX_SEGMENTS, convertFilesToTreeItems } from "@/lib/new-ui-utils";
 import { FileCollection } from "@/types/new-ui";
 import { CodeView } from "./code-view";
 import { Hint } from "./hint";
@@ -99,7 +98,12 @@ const FileExplorer = ({ files }: FileExplorerProps) => {
   const [copied, setCopied] = useState(false);
 
   const treeData = useMemo(() => {
-    return convertFilesToTreeItems(files);
+    // Handle both flat string maps and structured manifests
+    const normalizedFiles: Record<string, string> = {};
+    Object.entries(files).forEach(([path, value]) => {
+      normalizedFiles[path] = typeof value === 'string' ? value : (value as any).content || "";
+    });
+    return convertFilesToTreeItems(normalizedFiles);
   }, [files]);
 
   const handleFileSelect = useCallback(
@@ -111,10 +115,16 @@ const FileExplorer = ({ files }: FileExplorerProps) => {
     [files]
   );
 
+  const getFileContent = (path: string | null) => {
+    if (!path || !files[path]) return "";
+    const file = files[path];
+    return typeof file === 'string' ? file : (file as any).content || "";
+  };
+
   const handleCopy = () => {
     if (selectedFile) {
       navigator.clipboard
-        .writeText(files[selectedFile])
+        .writeText(getFileContent(selectedFile))
         .then(() => {
           setCopied(true);
           toast.success("Link copied");
@@ -157,7 +167,7 @@ const FileExplorer = ({ files }: FileExplorerProps) => {
             </div>
             <div className="flex-1 overflow-auto">
               <CodeView
-                code={files[selectedFile]}
+                code={getFileContent(selectedFile)}
                 lang={getLanguageFromExtension(selectedFile)}
               />
             </div>
