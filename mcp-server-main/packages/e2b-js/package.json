@@ -1,0 +1,21 @@
+{
+  "name": "e2b-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "e2b-mcp": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@e2b/code-interpreter": "^1.0.4",
+    "@modelcontextprotocol/sdk": "1.26.0",
+    "dotenv": "^16.4.5"
+  }
+}
