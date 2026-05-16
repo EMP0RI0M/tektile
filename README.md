@@ -1,93 +1,513 @@
-# TekTile: Adorable AI App Builder
+TekTile: The Edge-Native Full-Stack AI App Builder
 
-### The Edge-Native Full-Stack AI App Builder
+From Prompt to Production — Build, Execute, and Deploy Full-Stack Applications Using Natural Language
 
-**From Prompt to Production: Build and Deploy Full-Stack Applications with Natural Language**
+TekTile is a next-generation edge-native AI software engineering platform designed to transform natural language into production-ready full-stack applications. Combining autonomous AI orchestration, isolated cloud execution, real-time synchronization, and modern edge infrastructure, TekTile enables developers to build sophisticated applications entirely from prompts — without requiring complex local environment setup.
 
-TekTile is a world-class, edge-native development platform engineered to bridge the gap between high-level conceptualization and production-ready deployment. By leveraging Next.js and E2B cloud sandboxes, TekTile delivers a high-performance "Lovable/Bolt.new" style experience. This is not merely a code generator; it is a sophisticated orchestration layer that transforms natural language requirements into comprehensive codebases, complete with complex frontend components, specialized backend logic, and automated database schema management.
+Built around a modern “Lovable/Bolt.new”-inspired workflow, TekTile extends beyond simple code generation into a fully orchestrated software engineering environment capable of generating:
 
-The platform is optimized for the modern SaaS architect, providing an environment where generated code is executed within isolated, secure compute environments in real-time. By utilizing a specialized "Next.js-E2B-Supabase" architecture, TekTile ensures low-latency execution and high-fidelity streaming, allowing developers to iterate on full-stack applications without the friction of local environment configuration or manual boilerplate setup.
+Frontend systems
 
-**Core Mission:** Empowering users to build, preview, and deploy full-stack apps without local setup, democratizing software development through agentic AI orchestration and secure, isolated cloud sandboxes.
+Backend APIs
 
----
+Database schemas
 
-## Core Features & Innovations
+Authentication layers
 
-*   **Natural Language to Full-Stack**: Translates abstract text prompts into production-grade codebases, managing everything from UI architecture to database schemas.
-*   **E2B Cloud Sandboxes**: Executes AI-generated code within secure, isolated VMs. Every project runs in a dedicated environment, ensuring total isolation between build processes and the host system.
-*   **Real-Time Preview & Streaming**: Provides an instantaneous feedback loop. As the AI agents write code, the changes are streamed to the frontend and rendered immediately in a live browser preview.
-*   **Two-Way Synchronization**: Features a high-speed state management layer that keeps the browser UI and the remote E2B sandbox perfectly in sync using parallelized file operations.
-*   **Visual Inline Editing**: Features an integrated code editor enabling pro-level modifications and immediate hot-reloading within the browser.
-*   **MCP Integration**: Native support for the Model Context Protocol (MCP), granting AI agents direct access to PostgreSQL tools, specialized E2B commands, and the GitNexus context engine.
+Realtime architectures
 
----
+Edge functions
 
-## Technical Architecture
+Deployment-ready infrastructure
 
-*   **Edge-Native Framework**
-    *   **Framework**: Next.js (App Router) for streaming UI and low-latency interaction.
-    *   **Persistence Layer**: Supabase (PostgreSQL) for serverless data orchestration and authentication.
-*   **Agentic Orchestration**
-    *   **Adorable Orchestrator**: A custom, high-performance engine that manages multi-step code generation and build processes.
-    *   **MCP Layer**: Integration of specialized MCP servers (Postgres Toolbox, Custom E2B JS) providing agents with standardized access to external tools and enhanced repository context.
-*   **Secure Compute**
-    *   **E2B Code Interpreter**: Secure VM execution for running development servers and terminal commands. TekTile dynamically restores workspace states into fresh sandboxes to ensure persistence.
+Autonomous AI workflows
+
+
+TekTile is designed for the future of autonomous software creation.
+
 
 ---
 
-## The Tech Stack
+Open-Source Foundation
 
-| Layer | Technology | Purpose |
-| :--- | :--- | :--- |
-| **Frontend** | Next.js, React, Shadcn UI | High-performance full-stack framework with modern UI primitives. |
-| **Persistence** | Supabase (PostgreSQL) | Scalable database and auth backend for project metadata and manifests. |
-| **Execution** | E2B Cloud Sandboxes | Secure, isolated VM environments for code execution and previews. |
-| **AI Engine** | OpenRouter (DeepSeek, Claude, GPT) | Multi-model orchestration for specialized code reasoning and generation. |
-| **Tools** | MCP (Postgres, E2B, GitNexus) | Standardized interface for agents to interact with the environment. |
-| **Styling** | Tailwind CSS | Modern, utility-first styling for generated applications. |
+TekTile is proudly licensed under the GNU General Public License v3.0 (GNU-GPL-3.0) and is deeply inspired by several pioneering open-source AI engineering ecosystems.
 
----
+The project builds upon ideas, architectures, and innovations from:
 
-## Environment Configuration
+[Open Lovable by Firecrawl](https://github.com/firecrawl/open-lovable?utm_source=chatgpt.com)
 
-To initialize the TekTile environment, ensure the following keys are defined in your `.env.local` file (see `env.example` for details):
+[Lovable Clone by BernieTv](https://github.com/BernieTv/Lovable-Clone?utm_source=chatgpt.com)
 
-*   `NEXT_PUBLIC_SUPABASE_URL` & `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-*   `SUPABASE_SERVICE_ROLE_KEY`
-*   `E2B_API_KEY`
-*   `OPENROUTER_API_KEY` (Standardized for Adorable AI)
-*   `POSTGRES_URL` (For the MCP Postgres Toolbox)
+[Libra by Nextify Limited](https://github.com/nextify-limited/libra?utm_source=chatgpt.com)
 
----
+[Adorable by Freestyle.sh](https://github.com/freestyle-sh/Adorable?utm_source=chatgpt.com)
 
-## Getting Started: Installation
 
-TekTile requires Node.js v20+ and NPM for optimal performance.
+TekTile does not aim to merely clone these platforms. Instead, it evolves and combines their strongest concepts into a unified edge-native orchestration environment focused on:
 
-1.  **Clone the repository**: `git clone https://github.com/EMP0RI0M/tektile.git`
-2.  **Install dependencies**: `npm install`
-3.  **Setup Environment**: Copy `env.example` to `.env.local` and fill in your keys.
-4.  **Start Development**: `npm run dev`
+Autonomous AI engineering
 
----
+Secure execution
 
-## Stabilization Status (v1.0.0-stable)
+Cloud-native scalability
 
-The platform has recently undergone a major stabilization phase:
-- **Speed**: Optimized sync logic (parallelized I/O) reduced latency by 90%.
-- **Persistence**: Fixed workspace restoration issues for E2B sandboxes.
-- **Rendering**: Resolved chat history and file explorer display bugs.
-- **Auth**: Implemented seamless API key detection for OpenRouter.
+Multi-agent workflows
+
+Real-time synchronization
+
+Persistent runtime orchestration
+
+Full-stack deployment pipelines
+
+
+The goal is to create a modular AI operating system for software engineering.
+
 
 ---
 
-## License & Acknowledgments
+Current Status
 
-This project is open-source and licensed under the MIT License.
+Experimental • Under Active Development • Supervised Architecture
 
-Special thanks to:
-*   **Next.js**: For the foundation of the modern web.
-*   **E2B**: For the industry-leading sandboxed compute infrastructure.
-*   **Supabase**: For the robust backend and database orchestration.
-*   **Anthropic**: For the Model Context Protocol (MCP) standard.
+TekTile is currently under active development and supervision and should be considered an evolving infrastructure platform rather than a finalized commercial release.
+
+The platform is continuously being redesigned and optimized across:
+
+Sandbox orchestration
+
+AI reasoning pipelines
+
+State synchronization
+
+Database persistence
+
+Multi-agent execution
+
+Workspace restoration systems
+
+Runtime optimization
+
+Edge-native deployment pipelines
+
+
+Several systems are operational today, while others remain under active experimentation and stabilization.
+
+
+---
+
+Core Philosophy
+
+TekTile is built around one central belief:
+
+> Software engineering should become conversational, autonomous, and infrastructure-native.
+
+
+
+Instead of manually configuring environments, wiring databases, writing boilerplate, and managing deployment complexity, developers should be able to describe systems naturally while AI agents orchestrate the underlying implementation.
+
+
+---
+
+Technical Architecture
+
+Edge-Native Frontend
+
+Built using:
+
+Next.js
+
+React
+
+Tailwind CSS
+
+shadcn/ui
+
+
+The frontend architecture is optimized for:
+
+Streaming UI
+
+Instant updates
+
+Live previews
+
+Real-time rendering
+
+Hot reload synchronization
+
+Low-latency edge interaction
+
+
+
+---
+
+Secure Cloud Execution
+
+TekTile uses [E2B Cloud Sandboxes](https://e2b.dev?utm_source=chatgpt.com) as its isolated execution infrastructure.
+
+Every project executes inside secure cloud sandboxes, allowing AI-generated code to:
+
+Run safely
+
+Install dependencies
+
+Execute terminal commands
+
+Start development servers
+
+Stream previews instantly
+
+Restore previous workspace states
+
+
+This creates fully isolated runtime environments that protect both the host system and parallel projects.
+
+
+---
+
+Infrastructure Transition & Current Challenges
+
+Migration Toward Versatile Edge AI Execution
+
+TekTile is currently undergoing a major infrastructure transition as the platform scales beyond its initial prototype architecture.
+
+Earlier development versions experimented with simpler ingest-based edge workflows for AI generation jobs and orchestration pipelines. However, as the platform evolved toward persistent full-stack execution and autonomous reasoning, those systems introduced scalability, synchronization, and runtime limitations.
+
+To solve this, TekTile is now transitioning toward a more versatile edge-native orchestration architecture built around:
+
+E2B cloud execution
+
+Advanced Edge AI Functions
+
+Distributed runtime workers
+
+Persistent synchronization systems
+
+Modular AI job orchestration
+
+Stateful sandbox recovery pipelines
+
+
+This newer execution model enables support for:
+
+Long-running AI workflows
+
+Multi-step reasoning chains
+
+Persistent runtime sessions
+
+Concurrent generation pipelines
+
+Real-time collaborative synchronization
+
+Autonomous execution recovery
+
+
+
+---
+
+Current Engineering Challenges
+
+Because TekTile is still under active development and supervision, several infrastructural challenges are actively being solved, including:
+
+Sandbox persistence consistency
+
+Workspace restoration reliability
+
+Large-scale synchronization optimization
+
+File streaming stability
+
+AI context memory management
+
+Edge execution latency
+
+Multi-agent orchestration coordination
+
+Runtime scalability
+
+Concurrent sandbox balancing
+
+State reconciliation conflicts
+
+
+Many systems are continuously being rewritten, optimized, and modularized to support larger-scale autonomous engineering workflows.
+
+
+---
+
+AI Orchestration Layer
+
+Adorable-Inspired Agentic Orchestration
+
+TekTile includes a high-performance orchestration engine inspired by systems like Adorable AI.
+
+The orchestrator manages:
+
+Multi-step code generation
+
+Dependency planning
+
+File generation sequencing
+
+Context synchronization
+
+Error correction
+
+Runtime recovery
+
+Agent coordination
+
+Build orchestration
+
+
+Rather than functioning as a simple code autocomplete model, TekTile behaves more like an autonomous engineering system capable of coordinating complex workflows.
+
+
+---
+
+MCP Integration
+
+TekTile integrates the Model Context Protocol to provide structured access between AI agents and external tooling systems.
+
+This enables direct interaction with:
+
+PostgreSQL databases
+
+E2B sandboxes
+
+Filesystems
+
+Runtime environments
+
+Repository context systems
+
+Deployment infrastructure
+
+Edge tooling ecosystems
+
+
+MCP creates a standardized communication layer between AI reasoning systems and execution environments.
+
+
+---
+
+Persistence & Cloud Infrastructure
+
+TekTile is currently transitioning toward a fully cloud-native infrastructure powered by [Supabase](https://supabase.com?utm_source=chatgpt.com).
+
+Current cloud architecture includes:
+
+PostgreSQL persistence
+
+Authentication systems
+
+Workspace metadata
+
+Realtime synchronization
+
+Project restoration
+
+Deployment manifests
+
+Runtime state management
+
+
+
+---
+
+Upcoming Infrastructure Evolution
+
+Local Supabase Edge Runtime
+
+The next major evolution of TekTile focuses on local-first and hybrid infrastructure support.
+
+Planned capabilities include:
+
+Local Supabase Edge Functions
+
+Self-hosted orchestration support
+
+Hybrid cloud execution
+
+Distributed edge runtimes
+
+Local AI infrastructure support
+
+Persistent workspace snapshots
+
+Offline-capable orchestration systems
+
+
+This will allow TekTile to operate both:
+
+As a fully managed cloud platform
+
+As a self-hosted AI engineering environment
+
+
+
+---
+
+Database & ORM Evolution
+
+TekTile is actively moving toward a typed schema architecture powered by:
+
+Drizzle ORM
+
+PostgreSQL schema orchestration
+
+Edge-native relational persistence
+
+
+The upcoming Drizzle-based architecture will provide:
+
+Strongly typed schemas
+
+Safer migrations
+
+Faster query execution
+
+Better TypeScript inference
+
+AI-assisted schema generation
+
+Dynamic relational orchestration
+
+
+This enables AI agents to generate, evolve, and synchronize database architectures alongside frontend and backend systems automatically.
+
+
+---
+
+Real-Time Synchronization Engine
+
+One of TekTile’s most advanced systems is its high-speed synchronization architecture.
+
+The platform continuously synchronizes:
+
+Browser state
+
+Sandbox filesystems
+
+Generated code
+
+Runtime previews
+
+Workspace manifests
+
+Chat history
+
+AI execution state
+
+
+Recent stabilization improvements reduced synchronization latency by nearly 90% through:
+
+Parallelized file operations
+
+Optimized restoration logic
+
+Improved state reconciliation
+
+Better runtime synchronization pipelines
+
+
+
+---
+
+Multi-Model AI Stack
+
+TekTile leverages [OpenRouter](https://openrouter.ai?utm_source=chatgpt.com) for intelligent multi-model orchestration.
+
+Supported reasoning pipelines may include:
+
+Anthropic Claude
+
+OpenAI GPT models
+
+DeepSeek DeepSeek
+
+
+This allows specialized model routing depending on:
+
+Architecture planning
+
+Frontend generation
+
+Backend logic
+
+Refactoring
+
+Debugging
+
+Schema reasoning
+
+Tool orchestration
+
+
+
+---
+
+Environment Variables
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+E2B_API_KEY=
+OPENROUTER_API_KEY=
+POSTGRES_URL=
+
+
+---
+
+Installation
+
+Clone Repository
+
+git clone https://github.com/EMP0RI0M/tektile.git
+
+Install Dependencies
+
+npm install
+
+Setup Environment
+
+cp env.example .env.local
+
+Start Development Server
+
+npm run dev
+
+
+---
+
+Vision
+
+TekTile is evolving toward something much larger than a browser-based AI code editor.
+
+The long-term vision is to build:
+
+> A fully autonomous, edge-native software engineering operating system capable of reasoning, generating, executing, synchronizing, and deploying production systems in real time.
+
+
+
+By combining:
+
+Agentic AI
+
+Edge-native infrastructure
+
+Secure isolated execution
+
+Multi-model orchestration
+
+Realtime synchronization
+
+Typed schema intelligence
+
+Autonomous tooling systems
+
+Distributed execution environments
+
+
+TekTile aims to redefine how software is imagined, engineered, and deployed in the AI era.
